@@ -21,7 +21,7 @@ spec:
       containers:
       - name: transaction-api
 
-        image: asia-south1-docker.pkg.dev//transaction-repo/transaction-api:
+        image: IMAGE_PLACEHOLDER
 
         imagePullPolicy: Always
 
