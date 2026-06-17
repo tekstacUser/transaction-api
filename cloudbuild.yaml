@@ -1,49 +1,25 @@
 steps:
 
-# Build
 - name: 'maven:3.9.6-eclipse-temurin-17'
-  id: 'Maven Build'
   entrypoint: 'mvn'
-  args: ['clean','package']
+  args:
+    - clean
+    - package
 
-# Docker Build
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Docker Build'
   args:
     - build
-    - -t
-    - asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA
-    - .
+    - '-t'
+    - 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
+    - '.'
 
-# Docker Push
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Docker Push'
   args:
     - push
-    - asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA
-
-# Replace image in DEV manifest
-- name: 'ubuntu'
-  id: 'Update Dev Manifest'
-  entrypoint: bash
-  args:
-    - -c
-    - |
-      sed -i "s|IMAGE_PLACEHOLDER|asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA|g" k8s/dev/deployment.yaml
-
-# Deploy DEV
-- name: 'gcr.io/cloud-builders/kubectl'
-  id: 'Deploy Dev'
-  args:
-    - apply
-    - -f
-    - k8s/dev
-  env:
-    - CLOUDSDK_COMPUTE_REGION=asia-south1-a
-    - CLOUDSDK_CONTAINER_CLUSTER=transaction-cluster
+    - 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
 
 images:
-- asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA
+- 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
