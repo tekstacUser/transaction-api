@@ -1,0 +1,28 @@
+steps:
+
+# Step 1 - Build Spring Boot Application
+- name: 'maven:3.9.6-eclipse-temurin-17'
+  id: 'Maven Build'
+  entrypoint: 'mvn'
+  args:
+    - 'clean'
+    - 'package'
+
+# Step 2 - Build Docker Image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Docker Build'
+  args:
+    - 'build'
+    - '-t'
+    - 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
+    - '.'
+
+# Step 3 - Push Docker Image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push Image'
+  args:
+    - 'push'
+    - 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
+
+images:
+- 'asia-south1-docker.pkg.dev/$PROJECT_ID/transaction-repo/transaction-api:$SHORT_SHA'
